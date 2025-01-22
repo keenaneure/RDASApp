@@ -17,12 +17,16 @@ import sys, os
 import shapely.geometry
 import warnings
 from scipy.spatial.distance import cdist
+from scipy.interpolate import interp1d
 
 warnings.filterwarnings('ignore')
 
 ############ USER INPUT ##########################################################
 plot_var = "Increment"
-lev = 60                # 60=sfc; 1=toa
+##choose lev OR pres_lev by commenting/uncommenting out which is desired
+##code will break otherwise
+#lev = 35                # 60=sfc; 1=toa
+pres_lev = 500         # additionally, choose a specific pressure level in hPa
 clevmax_incr = 5     # max contour level for colorbar increment plots
 decimals = 2            # number of decimals to round for text boxes
 plot_box_width = 70.     # define size of plot domain (units: lat/lon degrees)
@@ -35,16 +39,18 @@ if variable == "airTemperature":
 
 # JEDI data
 datapath = "./"
-jgrid = f"{datapath}/Data/bkg/fv3_grid_spec.nc"
+#jgrid = f"{datapath}/Data/bkg/fv3_grid_spec.nc"
+jgrid = f"./fv3_grid_spec.nc"
 
 # FOR LETKF 
-janalysis = f"{datapath}/letkf-meanposterior-fv3_lam-C775.fv_core.res.nc" # 
-jbackgrnd = f"{datapath}/letkf-meanprior-fv3_lam-C775.fv_core.res.nc"
+#janalysis = f"{datapath}/letkf-meanposterior-fv3_lam-C775.fv_core.res.nc" # 
+#jbackgrnd = f"{datapath}/letkf-meanprior-fv3_lam-C775.fv_core.res.nc"
 
 # FOR HYBRID (or ENVAR)
-#janalysis = f"{datapath}/hybens3dvar-fv3_lam-C775.fv_core.res.nc" #Ens3dvar-fv3_lam-C775.fv_core.res.nc"
-#jbackgrnd = f"{datapath}/Data/bkg/fv3_dynvars.nc"
-
+janalysis = f"./ens3dvar-fv3_lam-C775.fv_core.res.nc"
+jbackgrnd = f"./Data/bkg/20240527.000000.fv_core.res.tile1.nc"
+#added for pressure calculations
+jbackgrnd2 = f"./Data/bkg/20240527.000000.fv_core.res.nc"
 
 ###################################################################################
 # Set cartopy shapefile path
@@ -62,14 +68,62 @@ lons = nc_g.variables["grid_lont"][:,:]
 # Open NETCDF4 dataset for reading
 nc_a = Dataset(janalysis, mode='r')
 nc_b = Dataset(jbackgrnd, mode='r')
+#added for pressure calculations
+nc_b2 = Dataset(jbackgrnd2, mode='r')
 
 # Read data and get dimensions
-lev = lev-1
-jedi_a = nc_a.variables["T"][0,lev,:,:].astype(np.float64)
-jedi_b = nc_b.variables["T"][0,lev,:,:].astype(np.float64)
+#lev = lev-1
+#jedi_a = nc_a.variables["T"][0,lev,:,:].astype(np.float64)
+#jedi_b = nc_b.variables["T"][0,lev,:,:].astype(np.float64)
+jedi_a = nc_a.variables["T"][0,:,:,:].astype(np.float64)
+jedi_b = nc_b.variables["T"][0,:,:,:].astype(np.float64)
+
+#coefficients from slightly different background file that define the hybrid sigma-pressure coordinates of FV3
+ak = nc_b2.variables['ak'][0]
+ak = ak[::-1] * 0.01
+nc_b2.close()
+
+#read in air pressure thickness
+pres_raw = nc_a.variables["DELP"][0,:,:,:].astype(np.float64)
+print(f"Shape of pres: {pres_raw.shape}")
+
+#read in air pressure thickness, and then calculate pressure
+try: # sometimes the delp variable name is capitalized, sometimes it isnt
+    delp = nc_b.variables['delp'][0]
+except:
+    delp = nc_b.variables['DELP'][0]
+shape = np.shape(delp)
+nz = shape[0]
+ny = shape[1]
+nx = shape[2]
+pres = np.empty((len(ak)-1,ny,nx))
+for k in range(0, nz):
+    pres[k,:,:] = np.sum(delp[:k,:,:], axis=0) * 0.01
 
 # compute increment
-jedi_inc = jedi_a - jedi_b
+#jedi_inc = jedi_a - jedi_b
+jedi_inc_all = jedi_a - jedi_b
+
+# Interpolate using user input pressure level
+if 'pres_lev' in globals():
+    #Initialize the array to store the interpolated values
+    jedi_inc = np.zeros(jedi_inc_all.shape[1:])
+    #loop over grid points
+    for i in range(jedi_inc.shape[0]):
+        for j in range(jedi_inc.shape[1]):
+            #extract pressure level for current grid point
+            p_levels = pres[:, i, j] #column of p values at i,j grid point                         
+            jedi_inc_val = jedi_inc_all[:, i, j] #corresponding increments
+            #create interpolator
+            interpolator = interp1d(p_levels, jedi_inc_val, kind='linear', bounds_error=False, fill_value="extrapolate")
+            #interpolate to user input pressure level
+            jedi_inc[i, j] = interpolator(pres_lev)
+# Otherwise, just extract the user input model level level
+elif 'lev' in globals():
+    jedi_inc = jedi_inc_all[lev, :, :]
+
+#reshape jedi_inc
+jedi_inc = jedi_inc.squeeze()
 
 if plot_var == "Increment":
     title1 = "JEDI"
@@ -136,11 +190,15 @@ cbar1.set_label(units, size=8)
 cbar1.ax.tick_params(labelsize=5, rotation=30)
 
 # Add titles, text, and save the figure
-#plt.suptitle(f"Temperature {plot_var} at Level: {lev+1}\nobtype: {longname}", fontsize = 9, y = 1.05)
-#m1.set_title(f"{title1}", fontsize = 9, y = 0.98)
-#subtitle1_minmax = f"min: {np.around(np.min(jedi), decimals)}\nmax: {np.around(np.max(jedi), decimals)}"
-#m1.text(left, top, f"{subtitle1_minmax}", fontsize = 6, ha='left', va='bottom')
+if 'pres_lev' in globals():
+    plt.suptitle(f"Temperature {plot_var} at {pres_lev} hPa", fontsize=9, y=0.95)
 
+elif 'lev' in globals():
+# Add 1 to final lev since indicies start from 0
+    plt.suptitle(f"Temperature {plot_var} at Level: {lev+1}", fontsize=9, y=0.95)
+
+subtitle1_minmax = f"min: {np.around(np.min(jedi_inc), decimals)}\nmax: {np.around(np.max(jedi_inc), decimals)}"
+m1.text(left * 0.99, bot * 1.01, f"{subtitle1_minmax}", fontsize=6, ha='left', va='bottom')
 if plot_var == "Increment":
     plt.tight_layout()
     plt.savefig(f"./increment_{variable}.png", dpi=350, bbox_inches='tight')
