@@ -14,16 +14,12 @@ import colormap
 import os
 import warnings
 from matplotlib.tri import Triangulation, TriAnalyzer
-from scipy.interpolate import interp1d
 
 warnings.filterwarnings('ignore')
 
 ############ USER INPUT ##########################################################
 plot_var = "Increment"
-##choose lev OR pres_lev by commenting/uncommenting out which is desired
-##code will break
 lev = 23                 # 1=sfc, 55=toa
-#pres_lev = 500         # additionally, choose a specific pressure level in hPa
 clevmax_incr = 2.0      # max contour level for colorbar increment plots
 decimals = 2            # number of decimals to round for text boxes
 plot_box_width = 100.   # define size of plot domain (units: lat/lon degrees)
@@ -61,40 +57,21 @@ nc_a = Dataset(janalysis, mode='r')
 nc_b = Dataset(jbackgrnd, mode='r')
 
 # Read data and get dimensions
-jedi_a = nc_a.variables["theta"][0, :, :].astype(np.float64)
-jedi_b = nc_b.variables["theta"][0, :, :].astype(np.float64)
+lev = lev - 1  # subtract 1 because python uses indices starting from 0
+jedi_a = nc_a.variables["theta"][0, :, lev].astype(np.float64)
+jedi_b = nc_b.variables["theta"][0, :, lev].astype(np.float64)
 
 # Convert to temperature
 if variable == "airTemperature":
-	pres_a = (nc_a.variables['pressure_p'][0,:,:] + nc_b['pressure_base'][0,:,:])/100.0
-	pres_b = (nc_b.variables['pressure_p'][0,:,:] + nc_b['pressure_base'][0,:,:])/100.0
+	pres_a = (nc_a.variables['pressure_p'][0,:,lev] + nc_b['pressure_base'][0,:,lev])/100.0
+	pres_b = (nc_b.variables['pressure_p'][0,:,lev] + nc_b['pressure_base'][0,:,lev])/100.0
 	dividend_a = (1000.0/pres_a)**(0.286)
 	dividend_b = (1000.0/pres_b)**(0.286)
 	jedi_a = jedi_a / dividend_a
 	jedi_b = jedi_b / dividend_b
 
 # Compute increment
-jedi_inc_all = jedi_a - jedi_b
-
-# Interpolate using user input pressure level
-if 'pres_lev' in globals():
-    # Initialize the array to store the interpolated values
-    jedi_inc = np.zeros((jedi_inc_all.shape[0], 1)) 
-    #loop over grid points
-    for i in range(jedi_inc_all.shape[0]):
-        #extract pressure level for current grid point
-        p_levels = pres_a[i, :] #p value at grid point
-        jedi_inc_val = jedi_inc_all[i, :] #corresponding increment
-        #create interpolator
-        interpolator = interp1d(p_levels, jedi_inc_val, kind='linear', bounds_error=False, fill_value="extrapolate")     
-        #interpolate to user input pressure level
-        jedi_inc[i, 0] = interpolator(pres_lev)
-# Otherwise, just extract the user input model level level
-elif 'lev' in globals():
-    jedi_inc = jedi_inc_all[:, lev]
-
-#reshape jedi_inc
-jedi_inc = jedi_inc.squeeze()
+jedi_inc = jedi_a - jedi_b
 
 def plot_T_inc(var_n, clevmax):
     """Temperature increment/diff [K]"""
@@ -149,14 +126,8 @@ cbar1.set_label(units, size=8)
 cbar1.ax.tick_params(labelsize=5, rotation=30)
 
 # Add titles, text, and save the figure
-
-if 'pres_lev' in globals():
-    plt.suptitle(f"Temperature {plot_var} at {pres_lev} hPa", fontsize=9, y=0.95)
-
-elif 'lev' in globals():
 # Add 1 to final lev since indicies start from 0
-    plt.suptitle(f"Temperature {plot_var} at Level: {lev+1}", fontsize=9, y=0.95)
- 
+plt.suptitle(f"Temperature {plot_var} at Level: {lev+1}", fontsize=9, y=0.95)
 subtitle1_minmax = f"min: {np.around(np.min(jedi_inc), decimals)}\nmax: {np.around(np.max(jedi_inc), decimals)}"
 m1.text(left * 0.99, bot * 1.01, f"{subtitle1_minmax}", fontsize=6, ha='left', va='bottom')
 if plot_var == "Increment":
@@ -166,4 +137,4 @@ if plot_var == "Increment":
 # Print some final stats
 print(f"Stats:")
 print(f" {longname} max: {np.around(np.max(jedi_inc), decimals)}")
-
+print(f" {longname} min: {np.around(np.min(jedi_inc), decimals)}")
