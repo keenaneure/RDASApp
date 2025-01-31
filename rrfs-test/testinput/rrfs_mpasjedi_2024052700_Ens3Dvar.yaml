@@ -16,8 +16,6 @@ variational:
       deallocate non-da fields: true
       interpolation type: unstructured
     gradient norm reduction: 1e-3
-    diagnostics:
-      departures: ombg
     ninner: 50
   - geometry:
       nml_file: ./namelist.atmosphere
@@ -25,12 +23,7 @@ variational:
       deallocate non-da fields: true
       interpolation type: unstructured
     gradient norm reduction: 1e-3
-    diagnostics:
-      departures: ombg
     ninner: 50
-final:
-  diagnostics:
-    departures: oman
 cost function:
   cost type: 3D-Var
   time window:
@@ -82,11 +75,11 @@ cost function:
          obsdatain:
            engine:
              type: H5File
-             obsfile: "data/obs_ctest/ioda_aircar_dc.nc"
+             obsfile: "data/obs/ioda_aircar_dc.nc"
          obsdataout:
            engine:
              type: H5File
-             obsfile: AIRCAR_hofxs_airTemperature_133.nc4
+             obsfile: jdiag_AIRCAR_airTemperature_133.nc4
              allow overwrite: true
          io pool:
            max pool size: 1
@@ -230,11 +223,11 @@ cost function:
          obsdatain:
            engine:
              type: H5File
-             obsfile: "data/obs_ctest/ioda_aircar_dc.nc"
+             obsfile: "data/obs/ioda_aircar_dc.nc"
          obsdataout:
            engine:
              type: H5File
-             obsfile: AIRCAR_hofxs_uv_233.nc4
+             obsfile: jdiag_AIRCAR_uv_233.nc4
              allow overwrite: true
          io pool:
            max pool size: 1
@@ -459,11 +452,11 @@ cost function:
          obsdatain:
            engine:
              type: H5File
-             obsfile: "data/obs_ctest/ioda_aircar_dc.nc"
+             obsfile: "data/obs/ioda_aircar_dc.nc"
          obsdataout:
            engine:
              type: H5File
-             obsfile: AIRCAR_hofxs_specificHumidity_133.nc4
+             obsfile: jdiag_AIRCAR_specificHumidity_133.nc4
              allow overwrite: true
          io pool:
            max pool size: 1
@@ -619,11 +612,11 @@ cost function:
          obsdatain:
            engine:
              type: H5File
-             obsfile: "data/obs_ctest/ioda_aircft_dc.nc"
+             obsfile: "data/obs/ioda_aircft_dc.nc"
          obsdataout:
            engine:
              type: H5File
-             obsfile: AIRCFT_hofxs_airTemperature_130.nc4
+             obsfile: jdiag_AIRCFT_airTemperature_130.nc4
              allow overwrite: true
          io pool:
            max pool size: 1
@@ -767,11 +760,11 @@ cost function:
          obsdatain:
            engine:
              type: H5File
-             obsfile: "data/obs_ctest/ioda_aircft_dc.nc"
+             obsfile: "data/obs/ioda_aircft_dc.nc"
          obsdataout:
            engine:
              type: H5File
-             obsfile: AIRCFT_hofxs_airTemperature_131.nc4
+             obsfile: jdiag_AIRCFT_airTemperature_131.nc4
              allow overwrite: true
          io pool:
            max pool size: 1
@@ -915,11 +908,11 @@ cost function:
          obsdatain:
            engine:
              type: H5File
-             obsfile: "data/obs_ctest/ioda_aircft_dc.nc"
+             obsfile: "data/obs/ioda_aircft_dc.nc"
          obsdataout:
            engine:
              type: H5File
-             obsfile: AIRCFT_hofxs_airTemperature_134.nc4
+             obsfile: jdiag_AIRCFT_airTemperature_134.nc4
              allow overwrite: true
          io pool:
            max pool size: 1
@@ -1063,11 +1056,11 @@ cost function:
          obsdatain:
            engine:
              type: H5File
-             obsfile: "data/obs_ctest/ioda_aircft_dc.nc"
+             obsfile: "data/obs/ioda_aircft_dc.nc"
          obsdataout:
            engine:
              type: H5File
-             obsfile: AIRCFT_hofxs_airTemperature_135.nc4
+             obsfile: jdiag_AIRCFT_airTemperature_135.nc4
              allow overwrite: true
          io pool:
            max pool size: 1
@@ -1211,11 +1204,11 @@ cost function:
          obsdatain:
            engine:
              type: H5File
-             obsfile: "data/obs_ctest/ioda_aircft_dc.nc"
+             obsfile: "data/obs/ioda_aircft_dc.nc"
          obsdataout:
            engine:
              type: H5File
-             obsfile: AIRCFT_hofxs_specificHumidity_134.nc4
+             obsfile: jdiag_AIRCFT_specificHumidity_134.nc4
              allow overwrite: true
          io pool:
            max pool size: 1
@@ -1371,11 +1364,11 @@ cost function:
          obsdatain:
            engine:
              type: H5File
-             obsfile: "data/obs_ctest/ioda_aircft_dc.nc"
+             obsfile: "data/obs/ioda_aircft_dc.nc"
          obsdataout:
            engine:
              type: H5File
-             obsfile: AIRCFT_hofxs_uv_230.nc4
+             obsfile: jdiag_AIRCFT_uv_230.nc4
              allow overwrite: true
          io pool:
            max pool size: 1
@@ -1600,11 +1593,11 @@ cost function:
          obsdatain:
            engine:
              type: H5File
-             obsfile: "data/obs_ctest/ioda_aircft_dc.nc"
+             obsfile: "data/obs/ioda_aircft_dc.nc"
          obsdataout:
            engine:
              type: H5File
-             obsfile: AIRCFT_hofxs_uv_231.nc4
+             obsfile: jdiag_AIRCFT_uv_231.nc4
              allow overwrite: true
          io pool:
            max pool size: 1
@@ -1829,11 +1822,11 @@ cost function:
          obsdatain:
            engine:
              type: H5File
-             obsfile: "data/obs_ctest/ioda_aircft_dc.nc"
+             obsfile: "data/obs/ioda_aircft_dc.nc"
          obsdataout:
            engine:
              type: H5File
-             obsfile: AIRCFT_hofxs_uv_234.nc4
+             obsfile: jdiag_AIRCFT_uv_234.nc4
              allow overwrite: true
          io pool:
            max pool size: 1
@@ -2058,11 +2051,11 @@ cost function:
          obsdatain:
            engine:
              type: H5File
-             obsfile: "data/obs_ctest/ioda_aircft_dc.nc"
+             obsfile: "data/obs/ioda_aircft_dc.nc"
          obsdataout:
            engine:
              type: H5File
-             obsfile: AIRCFT_hofxs_uv_235.nc4
+             obsfile: jdiag_AIRCFT_uv_235.nc4
              allow overwrite: true
          io pool:
            max pool size: 1
@@ -2287,11 +2280,11 @@ cost function:
          obsdatain:
            engine:
              type: H5File
-             obsfile: "data/obs_ctest/ioda_msonet_dc.nc"
+             obsfile: "data/obs/ioda_msonet_dc.nc"
          obsdataout:
            engine:
              type: H5File
-             obsfile: MSONET_hofxs_airTemperature_188.nc4
+             obsfile: jdiag_MSONET_airTemperature_188.nc4
              allow overwrite: true
          io pool:
            max pool size: 1
@@ -2430,11 +2423,11 @@ cost function:
          obsdatain:
            engine:
              type: H5File
-             obsfile: "data/obs_ctest/ioda_msonet_dc.nc"
+             obsfile: "data/obs/ioda_msonet_dc.nc"
          obsdataout:
            engine:
              type: H5File
-             obsfile: MSONET_hofxs_specificHumidity_188.nc4
+             obsfile: jdiag_MSONET_specificHumidity_188.nc4
              allow overwrite: true
          io pool:
            max pool size: 1
@@ -2574,11 +2567,11 @@ cost function:
          obsdatain:
            engine:
              type: H5File
-             obsfile: "data/obs_ctest/ioda_msonet_dc.nc"
+             obsfile: "data/obs/ioda_msonet_dc.nc"
          obsdataout:
            engine:
              type: H5File
-             obsfile: MSONET_hofxs_stationPressure_188.nc4
+             obsfile: jdiag_MSONET_stationPressure_188.nc4
              allow overwrite: true
          io pool:
            max pool size: 1
@@ -2588,7 +2581,7 @@ cost function:
        obs operator:
          name: SfcPCorrected
          da_psfc_scheme: GSI
-         geovar_sfc_geomz: surface_geopotential_height
+         geovar_sfc_geomz: geopotential_height_at_surface
          geovar_geomz: geopotential_height
        linear obs operator:
          name: Identity
@@ -2715,11 +2708,11 @@ cost function:
          obsdatain:
            engine:
              type: H5File
-             obsfile: "data/obs_ctest/ioda_msonet_dc.nc"
+             obsfile: "data/obs/ioda_msonet_dc.nc"
          obsdataout:
            engine:
              type: H5File
-             obsfile: MSONET_hofxs_uv_288.nc4
+             obsfile: jdiag_MSONET_uv_288.nc4
              allow overwrite: true
          io pool:
            max pool size: 1
@@ -2932,7 +2925,7 @@ cost function:
          obsdatain:
            engine:
              type: H5File
-             obsfile: "data/obs_ctest/atms_npp_obs_2024052700.nc"
+             obsfile: "data/obs/atms_npp_obs_2024052700_dc.nc"
          obsdataout:
            engine:
              type: H5File
@@ -2956,14 +2949,14 @@ cost function:
            lengthscale: 300e3 # orig
 
        obs bias:
-         input file:  data/obs_ctest/atms_npp.satbias.nc4
+         input file:  data/obs/atms_npp.satbias.nc4
          output file: ./out_atms_npp.satbias.nc
          variational bc:
            predictors:
            - name: constant
            - name: lapseRate
              order: 2
-             tlapse: &atms_npp_tlapse  data/obs_ctest/atms_npp.tlapse.txt
+             tlapse: &atms_npp_tlapse  data/obs/atms_npp.tlapse.txt
            - name: lapseRate
              tlapse: *atms_npp_tlapse
            - name: emissivityJacobian
@@ -2980,7 +2973,7 @@ cost function:
            step size: 1.0e-4
            largest analysis variance: 10000.0
            prior:
-             input file: data/obs_ctest/atms_npp.satbias_cov.nc4
+             input file: data/obs/atms_npp.satbias_cov.nc4
              inflation:
                ratio: 1.1
                ratio for small dataset: 2.0

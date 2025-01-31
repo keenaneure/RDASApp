@@ -86,9 +86,10 @@ elif [[ $DYCORE == "MPAS" ]]; then
   mkdir -p graphinfo stream_list
   ln -sf ${RDAS_DATA}/fix/graphinfo/* graphinfo/
   cp -rp ${RDAS_DATA}/fix/stream_list/* stream_list/
-  cp ${YOUR_PATH_TO_RDASAPP}/rrfs-test/testinput_expr/bumploc.yaml .
+  cp ${YOUR_PATH_TO_RDASAPP}/rrfs-test/testinput_expr/rrfs_mpasjedi_2024052700_bumploc.yaml .
   cp ${YOUR_PATH_TO_RDASAPP}/rrfs-test/testinput_expr/namelist.atmosphere .
   cp ${YOUR_PATH_TO_RDASAPP}/rrfs-test/testinput_expr/rrfs_mpasjedi_2024052700_Ens3Dvar.yaml .
+  cp ${YOUR_PATH_TO_RDASAPP}/rrfs-test/testinput_expr/rrfs_mpasjedi_2024052700_Hybrid.yaml .
   cp ${YOUR_PATH_TO_RDASAPP}/rrfs-test/testinput_expr/rrfs_mpasjedi_2024052700_letkf.yaml .
   cp ${YOUR_PATH_TO_RDASAPP}/rrfs-test/testinput_expr/rrfs_mpasjedi_2024052700_getkf.yaml .
   cp ${YOUR_PATH_TO_RDASAPP}/rrfs-test/testinput_expr/streams.atmosphere .
@@ -98,6 +99,7 @@ elif [[ $DYCORE == "MPAS" ]]; then
   mkdir -p data; cd data
   mkdir -p bumploc bkg obs ens
   ln -snf ${YOUR_PATH_TO_RDASAPP}/fix/bumploc/* bumploc/.
+  ln -snf ${YOUR_PATH_TO_RDASAPP}/fix/B_static/L55_20241204 B_static
   ln -snf ${YOUR_PATH_TO_RDASAPP}/fix/expr_data/${TEST_DATA}/bkg/mpasout.2024-05-27_00.00.00.nc .
   ln -snf ${YOUR_PATH_TO_RDASAPP}/fix/expr_data/${TEST_DATA}/invariant.nc invariant.nc
   ln -snf ${YOUR_PATH_TO_RDASAPP}/fix/expr_data/${TEST_DATA}/obs/* obs/
@@ -154,6 +156,7 @@ if [[ $GSI_TEST_DATA == "YES" ]]; then
   sed -i "s#@YOUR_PATH_TO_GSI@#${YOUR_PATH_TO_GSI}#g" ./run_gsi.sh
   sed -i "s#@SLURM_ACCOUNT@#${SLURM_ACCOUNT}#g"       ./run_gsi.sh
   sed -i "s#@MACHINE_ID@#${MACHINE_ID}#g"             ./run_gsi.sh
+  sed -i "s#ANAL_TIME@#2022052619#g"                  ./run_gsi.sh
   cp -p $YOUR_PATH_TO_RDASAPP/rrfs-test/scripts/templates/run_gsi_ncdiag_template.sh run_gsi_ncdiag.sh
   sed -i "s#@YOUR_PATH_TO_RDASAPP@#${YOUR_PATH_TO_RDASAPP}#g" ./run_gsi_ncdiag.sh
   sed -i "s#@MACHINE_ID@#${MACHINE_ID}#g"                     ./run_gsi_ncdiag.sh
